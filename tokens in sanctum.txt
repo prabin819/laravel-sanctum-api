@@ -1,0 +1,41 @@
+n sanctum, plaintext token is sent after creation and logging in and personal access token is stored in the db in hashed version. is there any other token in sanctum other than these by default?
+ChatGPT said:
+ChatGPT
+In Laravel Sanctum, there are two main types of tokens used by default:
+
+1. Plaintext Token (Personal Access Token)
+When It’s Created:
+When a personal access token is created (e.g., via Sanctum::createToken()), the token is returned in plaintext format only once at the time of creation.
+Usage:
+The client stores this plaintext token (e.g., in local storage or an HTTP-only cookie) and sends it in the Authorization header for subsequent API requests:
+makefile
+Copy code
+Authorization: Bearer <plaintext-token>
+Storage in Database:
+Sanctum stores only a hashed version of the token in the personal_access_tokens table, ensuring that the plaintext token cannot be retrieved later for security reasons.
+2. CSRF Token (for SPA Authentication using Cookies)
+When It’s Used:
+
+If you use Sanctum for stateful authentication (typically for Single Page Applications, SPAs), Sanctum generates a CSRF token for protection against Cross-Site Request Forgery attacks.
+How It Works:
+
+After a successful login or CSRF token refresh, the token is stored as a cookie (default: XSRF-TOKEN) and sent with requests.
+The client must send the CSRF token in a custom header (default: X-XSRF-TOKEN) with stateful requests.
+Key Points:
+
+CSRF tokens are not stored in the database; they are generated dynamically and verified against the session.
+Default Tokens in Sanctum
+Personal Access Tokens:
+
+Created explicitly via createToken() for authenticating APIs using the Bearer token scheme.
+Stored in the database (personal_access_tokens table).
+CSRF Tokens:
+
+Automatically handled for SPAs using Sanctum's stateful guard.
+Not stored in the database; they are tied to user sessions.
+Are There Any Other Tokens in Sanctum by Default?
+No, there are no other token types in Laravel Sanctum by default. However, you can extend Sanctum's functionality or implement additional custom token types as needed. The two tokens above are the only ones handled natively by Sanctum:
+
+Personal Access Tokens (for token-based API authentication).
+CSRF Tokens (for SPA authentication with cookies).
+Let me know if you want to dive deeper into any specific token mechanism in Sanctum!
